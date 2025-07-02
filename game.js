@@ -19,6 +19,7 @@ class MainScene extends Phaser.Scene {
         this.load.audio("gameover", "images/gameover.mp3");
         this.load.audio("music", "images/music.mp3");
         this.load.audio("collect", "images/assets/sound/effects/coin.mp3");
+        this.load.audio("gato", "images/gato.mp3");
          this.load.audio("jump", "images/assets/sound/effects/jump.mp3");
               this.load.audio("matar", "images/assets/sound/effects/matar.wav");
         for (let i = 1; i <= 9; i++) {
@@ -30,7 +31,7 @@ class MainScene extends Phaser.Scene {
     }
   initGlobals() {
 
-  
+  gatoLoaded=false
     coinSpacing = 200;
 isFerry=false;
     nextCloudX = 0;
@@ -63,7 +64,7 @@ isFerry=false;
         }
         nextCloudX = config.width * 2;
         if(!isPlaying){
-              this.music = this.sound.add('music', { loop: true, volume: 0.2 });
+              this.music = this.sound.add('music', { loop: true, volume: 0.05 });
         this.music.play();
         isPlaying=true
         }
@@ -223,7 +224,11 @@ isFerry=false;
 }
 spawnFallingEnemy() {
     if (isDead) return;
-
+    if(!gatoLoaded){
+        gatoLoaded=true
+          sceneInstance.sound.play("gato", {loop:true, volume: 0.5 });
+    }
+  
     const types = ["alice", "java"];
     const type = Phaser.Utils.Array.GetRandom(types);
 
@@ -713,6 +718,7 @@ new Phaser.Game(config);
 let isPlaying=false
 // Variáveis globais
 let score = 0;
+let gatoLoaded = false;
 let scoreText;
 let nextCloudX ;
 let isDead =false
