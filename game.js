@@ -251,7 +251,7 @@ spawnFallingEnemy() {
         }
 
         if (player.y > config.height - 113 && !isDead) {
-                this.gato.stop();
+          
             this.killPlayer();
             return;
         }
@@ -558,6 +558,9 @@ if (addFlagNext) {
 
 killPlayer() {
     if (isDead) return;
+     if (this.gato && this.gato.isPlaying) {
+  this.gato.stop();
+}
 
     isDead = true;
     player.setVelocityX(0);
