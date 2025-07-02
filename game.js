@@ -219,14 +219,15 @@ isFerry=false;
     enemy.body.setSize(180, 60);   // ajuste conforme sprite
     enemy.body.setOffset(30, 25);  // deslocamento da hitbox
 
-   enemy.speed = Phaser.Math.Between(150, 500);
+   enemy.speed = Phaser.Math.Between(150, 450);
 
 }
 spawnFallingEnemy() {
     if (isDead) return;
     if(!gatoLoaded){
         gatoLoaded=true
-          sceneInstance.sound.play("gato", {loop:true, volume: 0.5 });
+         this.gato = this.sound.add('gato', { loop: true, volume: 0.3 });
+        this.gato.play();
     }
   
     const types = ["alice", "java"];
@@ -235,7 +236,7 @@ spawnFallingEnemy() {
     const x = Phaser.Math.Between(0, this.physics.world.bounds.width);
     const enemy = fallingEnemies.create(x, -50, type);
  
-    enemy.setVelocityY(Phaser.Math.Between(100, 300));
+    enemy.setVelocityY(Phaser.Math.Between(100,300));
     enemy.setCollideWorldBounds(false);
     enemy.setGravityY(0); // já tem velocidade
     enemy.setScale(0.2)
@@ -250,6 +251,7 @@ spawnFallingEnemy() {
         }
 
         if (player.y > config.height - 113 && !isDead) {
+                this.gato.stop();
             this.killPlayer();
             return;
         }
@@ -724,6 +726,7 @@ let nextCloudX ;
 let isDead =false
 const cloudSpacing = 600;
 let music;
+let gato;
 const floorWidth = 120;
 const floorScale = 3;
 const minGap = 50;
