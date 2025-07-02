@@ -19,7 +19,8 @@ class MainScene extends Phaser.Scene {
         this.load.audio("gameover", "images/gameover.mp3");
         this.load.audio("music", "images/music.mp3");
         this.load.audio("collect", "images/assets/sound/effects/coin.mp3");
-
+         this.load.audio("jump", "images/assets/sound/effects/jump.mp3");
+              this.load.audio("matar", "images/assets/sound/effects/matar.wav");
         for (let i = 1; i <= 9; i++) {
             this.load.image(`place${i}`, `images/place${i}.png`);
         }
@@ -168,7 +169,7 @@ isFerry=false;
         enemy.setFrame(0);
         enemy.setVelocityX(0);
         enemy.body.enable = false; // Desativa colisão para não interferir
-
+      sceneInstance.sound.play("matar", { volume: 0.5 }); 
         // Espera 1 segundo e depois destrói
         sceneInstance.time.delayedCall(700, () => {
             enemy.destroy();
@@ -217,7 +218,7 @@ isFerry=false;
     enemy.body.setSize(180, 60);   // ajuste conforme sprite
     enemy.body.setOffset(30, 25);  // deslocamento da hitbox
 
-   enemy.speed = Phaser.Math.Between(50, 300);
+   enemy.speed = Phaser.Math.Between(150, 500);
 
 }
 spawnFallingEnemy() {
@@ -267,11 +268,15 @@ spawnFallingEnemy() {
 
         if (keys.up.isDown && player.body.touching.down) {
             player.setVelocityY(-330);
+                sceneInstance.sound.play("jump", { volume: 0.2 });
             player.anims.play("jump", true);
+
+            
         }
 
         if (!player.body.touching.down && player.body.velocity.y !== 0) {
             if (player.anims.currentAnim?.key !== "jump") {
+                    //  sceneInstance.sound.play("jump", { volume: 0.2 });
                 player.anims.play("jump", true);
             }
         }
@@ -315,11 +320,13 @@ if (isFerry && enemies.countActive(true) > 0) {
     }
 handleFerryCollision() {
     isFerry=true;
-    if (score < 200) {
+    if (score < 250) {
+
         this.scene.start("SemDinheiroScene");
+         
     }else{
        enemyCatSpawnTimer=this.time.addEvent({
-        delay: 5000, // a cada 1.5s
+        delay: 4000, // a cada 1.5s
         callback: this.spawnFallingEnemy,
         callbackScope: this,
         loop: true
@@ -516,13 +523,17 @@ if (addFlagNext) {
 }
 
  spawnCoins() {
-    const coinX = nextCoinX;
+    if(!isFerry){
+         const coinX = nextCoinX;
+          coinSpacing= Phaser.Math.Between(100, coinSpacing+100);
     // Limita a altura para que fique no chão ou um pouco acima, evitando que fiquem muito altas
     const coinY = Phaser.Math.Between((config.height / 2)+100, config.height - 100);
     const coin = coinGroup.create(coinX, coinY, "coin");
     coin.play("coin-idle");
     coin.body.setAllowGravity(false);
     coin.setScale(2);
+    }
+   
 }
 
 
@@ -637,8 +648,11 @@ class SemDinheiroScene extends Phaser.Scene {
     constructor() {
         super("SemDinheiroScene");
     }
-
+   preload() {
+          this.load.audio("gameover", "images/gameover.mp3");
+    }
     create() {
+         sceneInstance.sound.play("gameover");
         const width = this.sys.game.config.width;
         const height = this.sys.game.config.height;
 
@@ -647,7 +661,7 @@ class SemDinheiroScene extends Phaser.Scene {
         this.cameras.main.setBackgroundColor(backgroundColor);
 
         // Texto informativo
-        this.add.text(width / 2, height / 2 - 50, "Você não tem dinheiro suficiente!\n Precisa de no minimo 200 pontos \nVolte e colete mais moedas!", {
+        this.add.text(width / 2, height / 2 - 50, "Você não tem dinheiro suficiente!\n Precisa de no minimo 250 pontos \nVolte e colete mais moedas!", {
             fontSize: "32px",
             fill: "#ffffff",
             align: "center",
