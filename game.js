@@ -16,7 +16,8 @@ class MainScene extends Phaser.Scene {
         this.load.spritesheet("coin", "images/assets/collectibles/coin.png", { frameWidth: 16, frameHeight: 16 });
         this.load.spritesheet("person", "images/person.png", { frameWidth: 127, frameHeight: 98 });
         this.load.spritesheet("police", "images/policenew.png", { frameWidth: 234, frameHeight: 85 });
-        this.load.audio("gameover", "images/assets/sound/music/gameover.mp3");
+        this.load.audio("gameover", "images/gameover.mp3");
+        this.load.audio("music", "images/music.mp3");
         this.load.audio("collect", "images/assets/sound/effects/coin.mp3");
 
         for (let i = 1; i <= 9; i++) {
@@ -60,7 +61,12 @@ isFerry=false;
             this.createCloudsAt(x);
         }
         nextCloudX = config.width * 2;
- 
+        if(!isPlaying){
+              this.music = this.sound.add('music', { loop: true, volume: 0.2 });
+        this.music.play();
+        isPlaying=true
+        }
+        
         // Chão e ferry
         floorGroup = this.physics.add.staticGroup();
         ferryGroup = this.physics.add.staticGroup();
@@ -512,7 +518,7 @@ if (addFlagNext) {
  spawnCoins() {
     const coinX = nextCoinX;
     // Limita a altura para que fique no chão ou um pouco acima, evitando que fiquem muito altas
-    const coinY = Phaser.Math.Between(config.height / 2, config.height - 100);
+    const coinY = Phaser.Math.Between((config.height / 2)+100, config.height - 100);
     const coin = coinGroup.create(coinX, coinY, "coin");
     coin.play("coin-idle");
     coin.body.setAllowGravity(false);
@@ -522,7 +528,8 @@ if (addFlagNext) {
 
     collectCoin(player, coin) {
         coin.disableBody(true, true);
-        this.sound.play("collect");
+   this.sound.play("collect", { volume: 0.2 }); // volume vai de 0.0 a 1.0
+
         score += 3
         scoreText.setText(`Pontuação: ${score}`);
     }
@@ -653,7 +660,7 @@ class SemDinheiroScene extends Phaser.Scene {
         const button = this.add.text(width / 2, height / 2 + 50, "Voltar ao Jogo", {
             fontSize: "24px",
             fill: "#ffffff", // Texto do botão em branco
-            backgroundColor: "#FF0000", // Botão vermelho
+            backgroundColor: "#7287FF", // Botão vermelho
             padding: { x: 20, y: 10 },
             borderRadius: 5,
             fontFamily: 'Arial',
@@ -689,14 +696,14 @@ const config = {
 };
 
 new Phaser.Game(config);
-
+let isPlaying=false
 // Variáveis globais
 let score = 0;
 let scoreText;
 let nextCloudX ;
 let isDead =false
 const cloudSpacing = 600;
-
+let music;
 const floorWidth = 120;
 const floorScale = 3;
 const minGap = 50;
